@@ -16,7 +16,9 @@ using NtObjectManager.Utils.ScheduledTask;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using TaskScheduler;
+using Microsoft.Win32.TaskScheduler;
+
+using RegisteredTask = Microsoft.Win32.TaskScheduler.Task;
 
 namespace NtObjectManager.Cmdlets.Win32
 {
@@ -38,15 +40,19 @@ namespace NtObjectManager.Cmdlets.Win32
         /// </summary>
         protected override void ProcessRecord()
         {
-            ITaskService service = new TaskScheduler.TaskScheduler();
-            service.Connect();
-            foreach (var running_task in service.GetRunningTasks((int)_TASK_ENUM_FLAGS.TASK_ENUM_HIDDEN).Cast<IRunningTask>())
+            TaskService service = new TaskService();
+            if (!service.Connected)
+                return;
+
+            foreach (var running_task in service
+                .GetRunningTasks().Where(t => t.Definition.Settings.Hidden))
             {
                 try
                 {
-                    ITaskFolder folder = service.GetFolder(Path.GetDirectoryName(running_task.Path));
-                    IRegisteredTask task = folder.GetTask(running_task.Name);
-                    WriteObject(new RunningScheduledTaskEntry(running_task, task));
+                    TaskFolder folder = service.GetFolder(Path.GetDirectoryName(running_task.Path));
+                    RegisteredTask task = folder.AllTasks.Where(t => t.Name  == running_task.Name).FirstOrDefault();
+                    if (task != null)
+                        WriteObject(new RunningScheduledTaskEntry(running_task, task));
                 }
                 catch
                 {

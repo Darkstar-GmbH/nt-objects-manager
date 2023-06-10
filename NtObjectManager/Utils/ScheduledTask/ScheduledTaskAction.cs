@@ -12,7 +12,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-using TaskScheduler;
+using Microsoft.Win32.TaskScheduler;
 
 namespace NtObjectManager.Utils.ScheduledTask
 {
@@ -50,36 +50,36 @@ namespace NtObjectManager.Utils.ScheduledTask
             return $"{ActionType}: {Action}";
         }
 
-        internal ScheduledTaskAction(IAction action)
+        internal ScheduledTaskAction(Action action)
         {
             Id = action.Id ?? string.Empty;
             Action = string.Empty;
-            switch (action.Type)
+            switch ((ushort) action.ActionType)
             {
-                case _TASK_ACTION_TYPE.TASK_ACTION_EXEC:
+                case (ushort) TaskActionType.Execute:
                     ActionType = TaskActionType.Execute;
-                    if (action is IExecAction exec_action)
+                    if (action is ExecAction exec_action)
                     {
                         Action = $"{exec_action.Path} {exec_action.Arguments}";
                     }
                     break;
-                case _TASK_ACTION_TYPE.TASK_ACTION_COM_HANDLER:
+                case (ushort) TaskActionType.ComObject:
                     ActionType = TaskActionType.ComObject;
-                    if (action is IComHandlerAction com_action)
+                    if (action is ComHandlerAction com_action)
                     {
                         Action = $"{com_action.ClassId:B} {com_action.Data}";
                     }
                     break;
-                case _TASK_ACTION_TYPE.TASK_ACTION_SEND_EMAIL:
+                case (ushort) TaskActionType.SendEmail:
                     ActionType = TaskActionType.SendEmail;
-                    if (action is IEmailAction email_action)
+                    if (action is EmailAction email_action)
                     {
                         Action = $"From: {email_action.From} To: {email_action.To}";
                     }
                     break;
-                case _TASK_ACTION_TYPE.TASK_ACTION_SHOW_MESSAGE:
+                case (ushort) TaskActionType.ShowMessage:
                     ActionType = TaskActionType.ShowMessage;
-                    if (action is IShowMessageAction msg_action)
+                    if (action is ShowMessageAction msg_action)
                     {
                         Action = $"Title: {msg_action.Title} Body: {msg_action.MessageBody}";
                     }

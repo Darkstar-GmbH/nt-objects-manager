@@ -16,10 +16,13 @@ using NtApiDotNet;
 using NtObjectManager.Utils.ScheduledTask;
 using System.Collections.Generic;
 using System.Management.Automation;
-using TaskScheduler;
+using Microsoft.Win32.TaskScheduler;
+
+using RegisteredTask = Microsoft.Win32.TaskScheduler.Task;
 
 namespace NtObjectManager.Cmdlets.Accessible
 {
+
     /// <summary>
     /// <para type="description">Limit access check to specific types of task information.</para>
     /// </summary>
@@ -62,10 +65,12 @@ namespace NtObjectManager.Cmdlets.Accessible
     ///   <code>$token = Get-NtToken -Primary -Duplicate -IntegrityLevel Low&#x0A;Get-AccessibleScheduledTask -Tokens $token -AccessRights GenericWrite</code>
     ///   <para>Get all scheduled tasks which can be written by a low integrity copy of current token.</para>
     /// </example>
+
     [Cmdlet(VerbsCommon.Get, "AccessibleScheduledTask")]
     [OutputType(typeof(ScheduledTaskAccessCheckResult))]
     public partial class GetAccessibleScheduledTaskCmdlet : CommonAccessBaseWithAccessCmdlet<FileAccessRights>
     {
+
         #region Public Properties
 
         /// <summary>
@@ -155,36 +160,30 @@ namespace NtObjectManager.Cmdlets.Accessible
         #region Private Members
         private static readonly NtType _file_type = NtType.GetTypeByType<NtFile>();
 
-        private IEnumerable<ScheduledTaskEntry> EnumEntries(ITaskFolder folder)
+        private IEnumerable<ScheduledTaskEntry> EnumEntries(TaskFolder folder)
         {
             if (CheckMode == TaskCheckMode.FoldersOnly || CheckMode == TaskCheckMode.All)
-            {
                 yield return new ScheduledTaskEntry(folder);
-            }
 
             if (CheckMode == TaskCheckMode.TasksOnly || CheckMode == TaskCheckMode.All)
             {
-                foreach (IRegisteredTask task in folder.GetTasks((int)_TASK_ENUM_FLAGS.TASK_ENUM_HIDDEN))
-                {
-                    yield return new ScheduledTaskEntry(task);
-                }
+                foreach (RegisteredTask task in folder.GetTasks())
+                    if (task.Definition.Settings.Hidden)
+                        yield return new ScheduledTaskEntry(task);
             }
 
-            foreach (ITaskFolder sub_folder in folder.GetFolders(0))
-            {
+            foreach (TaskFolder sub_folder in folder.EnumerateFolders())
                 foreach (var entry in EnumEntries(sub_folder))
-                {
                     yield return entry;
-                }
-            }
         }
 
         private IEnumerable<ScheduledTaskEntry> GetTaskSchedulerEntries()
         {
-            ITaskService service = new TaskScheduler.TaskScheduler();
-            service.Connect();
+            TaskService service = new TaskService();
+            if (!service.Connected)
+                return null;
 
-            ITaskFolder folder = service.GetFolder(@"\");
+            TaskFolder folder = service.GetFolder(@"\");
             return EnumEntries(folder);
         }
         #endregion

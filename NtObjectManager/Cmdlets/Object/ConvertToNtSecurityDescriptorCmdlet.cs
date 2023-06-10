@@ -18,6 +18,7 @@ using NtObjectManager.Provider;
 using System;
 using System.Management.Automation;
 using System.Security.AccessControl;
+using System.Threading;
 
 namespace NtObjectManager.Cmdlets.Object
 {

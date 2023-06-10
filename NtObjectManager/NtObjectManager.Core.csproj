@@ -2,31 +2,200 @@
 
   <PropertyGroup>
     <AssemblyName>NtObjectManager</AssemblyName>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net481</TargetFramework>
     <PackageId>NtObjectManager</PackageId>
     <Authors>James Forshaw</Authors>
     <Company>Google Inc.</Company>
     <Product>NtObjectManager</Product>
-    <FileVersion>1.1.33.0</FileVersion>
+    <FileVersion>1.1.34</FileVersion>
     <Copyright>Copyright © Google LLC. 2016-2021</Copyright>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/googleprojectzero/sandbox-attacksurface-analysis-tools</RepositoryUrl>
-    <DefineConstants>NETCORE</DefineConstants>
+    <AssemblyVersion>1.1.34</AssemblyVersion>
+    <RepositoryUrl>https://github.com/darkstar-gmbh/nt-objects-manager</RepositoryUrl>
+    <Platforms>x64</Platforms>
+    <TargetFrameworks>net481</TargetFrameworks>
+    <RootNamespace>NtObjectManager</RootNamespace>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>C:\Users\rmuel\git\nt-objects-manager\NtObjectManager\bin\Debug\NtObjectManager.xml</DocumentationFile>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>C:\Users\rmuel\OneDrive\Admin\certs\vs-code-key.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>NT Objects Powershell Manager</Title>
+    <Version>1.1.34</Version>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>v1.1.34</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <IncludeSymbols>True</IncludeSymbols>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|4.8.1|x64'">
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|4.8.1|x64'">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net481|x64'">
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net481|x64'">
+    <Optimize>False</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Win32.Registry" Version="4.4.0" />
-    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
-    <PackageReference Include="System.Security.AccessControl" Version="4.5.0" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.4.1" />
+    <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+	<PackageReference Include="System.Management.Automation" Version="6.0.4" /> 
+    <PackageReference Include="System.Security.AccessControl" Version="6.0.0" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="7.0.0" />
+    <PackageReference Include="System.Threading.AccessControl" Version="7.0.1" />
+    <PackageReference Include="TaskScheduler" Version="2.10.1" />
   </ItemGroup>
 
   <ItemGroup>
-	<Compile Remove="Properties\AssemblyInfo.cs" />
+    <None Remove="AppModelFunctions.ps1" />
+    <None Remove="DsFunctions.ps1" />
+    <None Remove="FirewallFunctions.ps1" />
+    <None Remove="Formatters.ps1xml" />
+    <None Remove="KerberosFunctions.ps1" />
+    <None Remove="LsaFunctions.ps1" />
+    <None Remove="MiscFunctions.ps1" />
+    <None Remove="NtDeviceFunctions.ps1" />
+    <None Remove="NtFileFunctions.ps1" />
+    <None Remove="NtKeyFunctions.ps1" />
+    <None Remove="NtObjectFunctions.ps1" />
+    <None Remove="NtObjectManager.psd1" />
+    <None Remove="NtObjectManager.psm1" />
+    <None Remove="NtProcessFunctions.ps1" />
+    <None Remove="NtSectionFunctions.ps1" />
+    <None Remove="NtSecurityFunctions.ps1" />
+    <None Remove="NtSystemInfoFunctions.ps1" />
+    <None Remove="NtThreadFunctions.ps1" />
+    <None Remove="NtTokenFunctions.ps1" />
+    <None Remove="NtVirtualMemoryFunctions.ps1" />
+    <None Remove="NtWindowFunctions.ps1" />
+    <None Remove="packages.config" />
+    <None Remove="RpcFunctions.ps1" />
+    <None Remove="SamFunctions.ps1" />
+    <None Remove="SocketFunctions.ps1" />
+    <None Remove="TypeExtensions.ps1xml" />
+    <None Remove="UtilityFunctions.ps1" />
+    <None Remove="Win32DebugFunctions.ps1" />
+    <None Remove="Win32ModuleFunctions.ps1" />
+    <None Remove="Win32ProcessFunctions.ps1" />
+    <None Remove="Win32SecurityFunctions.ps1" />
+    <None Remove="Win32ServiceFunctions.ps1" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\NtApiDotNet\NtApiDotNet.Core.csproj" />
+    <Content Include="NtObjectManager.psm1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NtApiDotNet\NtApiDotNet.Build.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="AppModelFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DsFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FirewallFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Formatters.ps1xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="KerberosFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LsaFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MiscFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtDeviceFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtFileFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtKeyFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtObjectFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtObjectManager.psd1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtProcessFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtSectionFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtSecurityFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtSystemInfoFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtThreadFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtTokenFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtVirtualMemoryFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NtWindowFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="packages.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="RpcFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SamFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SocketFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TypeExtensions.ps1xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UtilityFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Win32DebugFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Win32ModuleFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Win32ProcessFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Win32SecurityFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Win32ServiceFunctions.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

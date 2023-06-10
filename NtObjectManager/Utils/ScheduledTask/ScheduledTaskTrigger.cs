@@ -12,7 +12,8 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-using TaskScheduler;
+using System;
+using Microsoft.Win32.TaskScheduler;
 
 namespace NtObjectManager.Utils.ScheduledTask
 {
@@ -55,27 +56,27 @@ namespace NtObjectManager.Utils.ScheduledTask
         /// <summary>
         /// The start boundary for the trigger.
         /// </summary>
-        public string StartBoundary { get; }
+        public DateTime StartBoundary { get; }
 
         /// <summary>
         /// The end boundary for the trigger.
         /// </summary>
-        public string EndBoundary { get; }
+        public DateTime EndBoundary { get; }
 
         /// <summary>
         /// Time limit for execution.
         /// </summary>
-        public string ExecutionTimeLimit { get; }
+        public TimeSpan ExecutionTimeLimit { get; }
 
-        internal static ScheduledTaskTrigger Create(ITrigger trigger)
+        internal static ScheduledTaskTrigger Create(Trigger trigger)
         {
             return new ScheduledTaskTrigger(trigger);
         }
 
-        private protected ScheduledTaskTrigger(ITrigger trigger)
+        private protected ScheduledTaskTrigger(Trigger trigger)
         {
             Id = trigger.Id;
-            TriggerType = (ScheduledTaskTriggerType)(int)trigger.Type;
+            TriggerType = (ScheduledTaskTriggerType) (int) trigger.TriggerType;
             StartBoundary = trigger.StartBoundary;
             EndBoundary = trigger.EndBoundary;
             ExecutionTimeLimit = trigger.ExecutionTimeLimit;

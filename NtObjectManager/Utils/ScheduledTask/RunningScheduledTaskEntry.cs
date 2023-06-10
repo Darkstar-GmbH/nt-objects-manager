@@ -13,7 +13,22 @@
 //  limitations under the License.
 
 using System;
-using TaskScheduler;
+
+using TaskScheduler = Microsoft.Win32.TaskScheduler.TaskSchedulerSnapshot;
+using RegisteredTask = Microsoft.Win32.TaskScheduler.Task;
+using ScheduledTask = Microsoft.Win32.TaskScheduler.TaskSchedulerSnapshot;
+using ScheduledTaskAction = NtObjectManager.Utils.ScheduledTask.ScheduledTaskAction;
+using Action = Microsoft.Win32.TaskScheduler.Action;
+
+using TaskProcessTokenSid = Microsoft.Win32.TaskScheduler.TaskProcessTokenSidType;
+using TaskLogonType = Microsoft.Win32.TaskScheduler.TaskLogonType;
+using TaskRunLevel = Microsoft.Win32.TaskScheduler.TaskRunLevel;
+using TaskActionType = Microsoft.Win32.TaskScheduler.TaskActionType;
+using TaskRunFlags = Microsoft.Win32.TaskScheduler.TaskRunFlags;
+
+using Microsoft.Win32.TaskScheduler;
+using NtApiDotNet.Win32.Security.Authentication;
+using NtApiDotNet.Win32;
 
 namespace NtObjectManager.Utils.ScheduledTask
 {
@@ -53,14 +68,12 @@ namespace NtObjectManager.Utils.ScheduledTask
         /// </summary>
         public string CurrentAction { get; }
 
-        internal RunningScheduledTaskEntry(IRunningTask running_task, IRegisteredTask task)
+        internal RunningScheduledTaskEntry(RunningTask running_task, RegisteredTask task)
             : base(task)
         {
-            ProcessId = (int)running_task.EnginePID;
-            if (Guid.TryParse(running_task.InstanceGuid, out Guid guid))
-            {
-                InstanceId = guid;
-            }
+            ProcessId = (int) running_task.EnginePID;
+            Guid guid = running_task.InstanceGuid;
+            InstanceId = guid;
             State = (TaskState)(int)running_task.State;
             CurrentAction = running_task.CurrentAction;
         }

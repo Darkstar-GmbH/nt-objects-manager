@@ -12,12 +12,29 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-using NtApiDotNet;
-using NtObjectManager.Utils.ScheduledTask;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TaskScheduler;
+using System.Text.RegularExpressions;
+
+using NtApiDotNet;
+
+using TaskScheduler = Microsoft.Win32.TaskScheduler.TaskSchedulerSnapshot;
+using RegisteredTask = Microsoft.Win32.TaskScheduler.Task;
+using ScheduledTask = Microsoft.Win32.TaskScheduler.TaskSchedulerSnapshot;
+using ScheduledTaskAction = NtObjectManager.Utils.ScheduledTask.ScheduledTaskAction;
+using Action = Microsoft.Win32.TaskScheduler.Action;
+
+using TaskProcessTokenSid = Microsoft.Win32.TaskScheduler.TaskProcessTokenSidType;
+using TaskLogonType = Microsoft.Win32.TaskScheduler.TaskLogonType;
+using TaskRunLevel = Microsoft.Win32.TaskScheduler.TaskRunLevel;
+using TaskActionType = Microsoft.Win32.TaskScheduler.TaskActionType;
+using TaskRunFlags = Microsoft.Win32.TaskScheduler.TaskRunFlags;
+
+using Microsoft.Win32.TaskScheduler;
+using NtApiDotNet.Win32.Security.Authentication;
+using NtApiDotNet.Win32;
 
 namespace NtObjectManager.Cmdlets.Accessible
 {
@@ -59,12 +76,12 @@ namespace NtObjectManager.Cmdlets.Accessible
         /// <summary>
         /// The principal of the type.
         /// </summary>
-        public string Principal { get; }
+        public TaskPrincipal Principal { get; }
 
         /// <summary>
         /// List of the actions.
         /// </summary>
-        public IEnumerable<ScheduledTaskAction> Actions { get; }
+        public ActionCollection Actions { get; }
 
         /// <summary>
         /// Number of actions.
@@ -74,12 +91,14 @@ namespace NtObjectManager.Cmdlets.Accessible
         /// <summary>
         /// The default type of action.
         /// </summary>
-        public TaskActionType DefaultActionType => Actions.FirstOrDefault()?.ActionType ?? TaskActionType.None;
+        public UInt16 DefaultActionType => Actions.Count() == 0 
+                    ? (UInt16) TaskActionType.Execute
+                    : ((UInt16) (Actions)[0].ActionType);
 
         /// <summary>
         /// The default action to be invoked.
         /// </summary>
-        public string DefaultAction => Actions.FirstOrDefault()?.Action ?? string.Empty;
+        public Action DefaultAction => Actions.Count() != 0 ? Actions.GetEnumerator().Current : null;
 
         /// <summary>
         /// Get the task name.
@@ -94,7 +113,7 @@ namespace NtObjectManager.Cmdlets.Accessible
         /// <summary>
         /// Required privileged for task.
         /// </summary>
-        public IEnumerable<string> RequiredPrivileges { get; }
+        public IEnumerable<TaskPrincipalPrivilege> RequiredPrivileges { get; }
 
         /// <summary>
         /// Process token SID.
@@ -122,38 +141,49 @@ namespace NtObjectManager.Cmdlets.Accessible
         /// <param name="flags">Flags for the run operation.</param>
         /// <param name="session_id">Optional session ID (Needs UseSessionId flag).</param>
         /// <param name="user">Optional user name or SID.</param>
-        public void RunEx(TaskRunFlags flags, int session_id, string user, params string[] args)
-        {
-            GetTask().RunEx(args, (int)flags, session_id, string.IsNullOrWhiteSpace(user) ? null : user);
-        }
+        public void RunEx(TaskRunFlags flags, int session_id, string user, params string[] args) =>
+            GetTask().RunEx(
+                (TaskRunFlags)Enum.Parse(typeof(TaskRunFlags), flags.ToString()), 
+                session_id, 
+                string.IsNullOrWhiteSpace(user)
+                    ? null
+                    : user);
 
-        internal ScheduledTaskAccessCheckResult(ScheduledTaskEntry entry, AccessMask granted_access,
+        internal ScheduledTaskAccessCheckResult(RegisteredTask entry, AccessMask granted_access,
             SecurityDescriptor sd, GenericMapping generic_mapping, TokenInformation token_info)
             : base(entry.Path, GetAccessibleScheduledTaskCmdlet.TypeName, granted_access,
                 generic_mapping, sd,
                 typeof(FileAccessRights), false, token_info)
         {
             Enabled = entry.Enabled;
-            Hidden = entry.Hidden;
-            AllowDemandStart = entry.AllowDemandStart;
+            Hidden = entry.Definition.Settings.Hidden;
+            AllowDemandStart = entry.Definition.Settings.AllowDemandStart;
             Xml = entry.Xml;
-            LogonType = entry.LogonType;
-            RunLevel = entry.RunLevel;
-            Principal = entry.Principal;
-            Actions = entry.Actions;
+            LogonType = (TaskLogonType) entry.TaskService.Site.GetService(typeof(TaskLogonType));
+
+            RunLevel = (TaskRunLevel) entry.TaskService.Site.GetService(typeof(TaskRunLevel));
+
+            Principal = entry.Definition.Principal;
+            Actions = entry.Definition.Actions;
             ActionCount = Actions.Count();
-            RequiredPrivileges = entry.RequiredPrivilege;
-            ProcessTokenSid = entry.ProcessTokenSid;
-            HasActionArguments = entry.HasActionArguments;
+            RequiredPrivileges = entry.Definition.Principal.RequiredPrivileges;
+            ProcessTokenSid = entry.Definition.Principal.ProcessTokenSidType;
+            HasActionArguments = entry
+                .Definition
+                .Actions
+                .OfType<ExecAction>()
+                .Cast<ExecAction>()
+                .Any<ExecAction>(a => a.Arguments != null && a.Arguments.Count() > 0);
         }
 
-        private IRegisteredTask GetTask()
+        private RegisteredTask GetTask()
         {
-            ITaskService service = new TaskScheduler.TaskScheduler();
-            service.Connect();
+            TaskService service = new TaskService();
+            if (!service.Connected)
+                return null;
 
-            ITaskFolder folder = service.GetFolder(Path.GetDirectoryName(Name));
-            return folder.GetTask(Path.GetFileName(Name));
+            TaskFolder folder = service.GetFolder(Path.GetDirectoryName(Name));
+            return folder.GetTasks(new Regex(Path.GetFileName(Name))).First();
         }
     }
 }

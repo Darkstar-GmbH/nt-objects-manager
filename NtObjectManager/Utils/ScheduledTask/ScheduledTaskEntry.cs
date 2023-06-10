@@ -16,7 +16,15 @@ using NtApiDotNet;
 using NtObjectManager.Cmdlets.Accessible;
 using System.Collections.Generic;
 using System.Linq;
-using TaskScheduler;
+using Microsoft.Win32.TaskScheduler;
+
+using RegisteredTask = Microsoft.Win32.TaskScheduler.Task;
+using Action = Microsoft.Win32.TaskScheduler.Action;
+
+using Principal = System.Security.Principal.IPrincipal;
+
+using NtApiDotNet.Win32;
+using System.Security.AccessControl;
 
 namespace NtObjectManager.Utils.ScheduledTask
 {
@@ -72,7 +80,7 @@ namespace NtObjectManager.Utils.ScheduledTask
         /// <summary>
         /// List of required privileges.
         /// </summary>
-        public IEnumerable<string> RequiredPrivilege { get; }
+        public IEnumerable<TaskPrincipalPrivileges> RequiredPrivilege { get; }
         /// <summary>
         /// Principal process token SID.
         /// </summary>
@@ -86,9 +94,11 @@ namespace NtObjectManager.Utils.ScheduledTask
         /// </summary>
         public bool HasActionArguments { get; }
 
-        internal ScheduledTaskEntry(IRegisteredTask task)
+        internal ScheduledTaskEntry(RegisteredTask task)
         {
-            SecurityDescriptor = SecurityDescriptor.Parse(task.GetSecurityDescriptor((int)SecurityInformation.AllBasic), false).GetResultOrDefault();
+            SecurityDescriptor = new SecurityDescriptor(
+                task.Folder.GetAccessControl(AccessControlSections.All).GetSecurityDescriptorBinaryForm());
+
             Path = task.Path;
             Enabled = task.Enabled;
             Xml = task.Xml;
@@ -97,53 +107,57 @@ namespace NtObjectManager.Utils.ScheduledTask
             Hidden = settings.Hidden;
             AllowDemandStart = settings.AllowDemandStart;
             var principal = definition.Principal;
-            if (principal.RunLevel == _TASK_RUNLEVEL.TASK_RUNLEVEL_HIGHEST)
+            if (principal.RunLevel.Equals(TaskRunLevel.Highest))
             {
                 RunLevel = TaskRunLevel.Highest;
             }
 
-            List<string> privs = new List<string>();
-            if (principal is IPrincipal2 prin2)
-            {
-                privs.AddRange(Enumerable.Range(0, prin2.RequiredPrivilegeCount).Select(i => prin2.RequiredPrivilege[i]));
-                ProcessTokenSid = (TaskProcessTokenSid)(int)prin2.ProcessTokenSidType;
-            }
+            List<TaskPrincipalPrivileges> privs = new List<TaskPrincipalPrivileges>();
+            privs.AddRange(Enumerable.Range(0, principal.RequiredPrivileges.Count())
+                .Select(i => principal.RequiredPrivileges));
+
+            ProcessTokenSid = (TaskProcessTokenSid) (int) principal.ProcessTokenSidType;
             RequiredPrivilege = privs.AsReadOnly();
 
             TaskLogonType logon_type = TaskLogonType.None;
             string principal_name = string.Empty;
-            switch (principal.LogonType)
-            {
-                case _TASK_LOGON_TYPE.TASK_LOGON_GROUP:
-                    logon_type = TaskLogonType.Group;
-                    principal_name = principal.GroupId;
-                    break;
-                case _TASK_LOGON_TYPE.TASK_LOGON_INTERACTIVE_TOKEN:
-                case _TASK_LOGON_TYPE.TASK_LOGON_PASSWORD:
-                case _TASK_LOGON_TYPE.TASK_LOGON_INTERACTIVE_TOKEN_OR_PASSWORD:
-                    logon_type = TaskLogonType.User;
-                    principal_name = principal.UserId;
-                    break;
-                case _TASK_LOGON_TYPE.TASK_LOGON_SERVICE_ACCOUNT:
-                    logon_type = TaskLogonType.ServiceAccount;
-                    principal_name = principal.UserId;
-                    break;
-                case _TASK_LOGON_TYPE.TASK_LOGON_S4U:
-                    logon_type = TaskLogonType.S4U;
-                    principal_name = principal.UserId;
-                    break;
+            if (principal.LogonType.Equals(TaskLogonType.Group)) {
+                logon_type = TaskLogonType.Group;
+                principal_name = principal.GroupId;
             }
+            else if (principal.LogonType.Equals(SecurityLogonType.Interactive) ||
+                principal.LogonType.Equals(Microsoft.Win32.TaskScheduler.TaskLogonType.Password) ||
+                principal.LogonType.Equals(Microsoft.Win32.TaskScheduler.TaskLogonType.InteractiveTokenOrPassword)) {
+                logon_type = TaskLogonType.User;
+                principal_name = principal.UserId;
+            }
+            else if (principal.LogonType.Equals(TaskLogonType.ServiceAccount)) {
+                logon_type = TaskLogonType.ServiceAccount;
+                principal_name = principal.UserId;
+            }
+            else if (principal.LogonType.Equals(TaskLogonType.S4U)) {
+                logon_type = TaskLogonType.S4U;
+                principal_name = principal.UserId;
+            }
+
             LogonType = logon_type;
             Principal = principal_name;
-            Actions = definition.Actions.Cast<IAction>().Select(a => new ScheduledTaskAction(a)).ToList().AsReadOnly();
+            Actions = definition.Actions.Cast<Action>().Select(a => new ScheduledTaskAction(a)).ToList().AsReadOnly();
             HasActionArguments = Actions.Any(a => a.HasArguments);
-            Triggers = definition.Triggers.Cast<ITrigger>().Select(ScheduledTaskTrigger.Create).ToList().AsReadOnly();
+            Triggers = definition.Triggers
+                .Cast<Trigger>()
+                .Select(trigger => ScheduledTaskTrigger.Create(trigger))
+                .ToList()
+                .AsReadOnly()
+                ;
         }
 
-        internal ScheduledTaskEntry(ITaskFolder folder)
+        internal ScheduledTaskEntry(TaskFolder folder)
         {
             Folder = true;
-            SecurityDescriptor = SecurityDescriptor.Parse(folder.GetSecurityDescriptor((int)SecurityInformation.AllBasic), false).GetResultOrDefault();
+            SecurityDescriptor = new SecurityDescriptor(
+                folder.GetAccessControl(AccessControlSections.All).GetSecurityDescriptorBinaryForm());
+
             Path = folder.Path;
         }
 
@@ -156,8 +170,11 @@ namespace NtObjectManager.Utils.ScheduledTask
             }
             else
             {
-                return new ScheduledTaskAccessCheckResult(this, granted_access, SecurityDescriptor.Clone(),
-                    _file_type.GenericMapping, token_info);
+                return new CommonAccessCheckResult(
+                    this.Principal, typeof(Principal).GetType().Name, 
+                    granted_access, _file_type.GenericMapping, 
+                    SecurityDescriptor.Clone(), typeof(AccessMask), 
+                    _file_type == NtType.GetTypeByType<NtDirectory>(), token_info);
             }
         }
 

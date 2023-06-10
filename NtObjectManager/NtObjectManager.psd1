@@ -18,7 +18,7 @@
 RootModule = 'NtObjectManager.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.1.33'
+ModuleVersion = '1.1.34'
 
 # ID used to uniquely identify this module
 GUID = 'ac251c97-67a6-4bc4-bb8a-5ae300e93030'
@@ -36,10 +36,10 @@ Copyright = '(c) 2016-2020 Google Inc. All rights reserved.'
 Description = 'This module adds a provider and cmdlets to access the NT object manager namespace.'
 
 # Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '3.0'
+PowerShellVersion = '5.0'
 
 # Minimum version of Microsoft .NET Framework required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
-DotNetFrameworkVersion = '4.6.1'
+DotNetFrameworkVersion = '4.8.1'
 
 # Minimum version of the common language runtime (CLR) required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
 CLRVersion = '4.0'
@@ -220,10 +220,10 @@ PrivateData = @{
         LicenseUri = 'http://www.apache.org/licenses/LICENSE-2.0.html'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/googleprojectzero/sandbox-attacksurface-analysis-tools'
+        ProjectUri = 'https://github.com/darkstar-developments/nt-object-manager'
 
         # ReleaseNotes of this module
-        ReleaseNotes = '1.1.33
+        ReleaseNotes = '1.1.34
 --------
 * Various bug fixes.
 * Added RPC pipe support.

@@ -14,7 +14,7 @@
 
 Set-StrictMode -Version Latest
 
-Import-Module "$PSScriptRoot\NtObjectManager.dll"
+Import-Module "$PSScriptRoot\NtObjectManager.Core.dll"
 
 # Source the external scripts into this module.
 . "$PSScriptRoot\*.ps1"

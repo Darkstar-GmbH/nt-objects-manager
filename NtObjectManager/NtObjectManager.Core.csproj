@@ -1,26 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>NtObjectManager</AssemblyName>
-    <TargetFramework>net481</TargetFramework>
-    <PackageId>NtObjectManager</PackageId>
+    <AssemblyName>NtObjectManager.Core</AssemblyName>
+    <TargetFramework>netcoreapp7</TargetFramework>
+    <PackageId>NtObjectManager.Core</PackageId>
     <Authors>James Forshaw</Authors>
     <Company>Google Inc.</Company>
-    <Product>NtObjectManager</Product>
+    <Product>NtObjectManager.Core</Product>
     <FileVersion>1.1.34</FileVersion>
     <Copyright>Copyright © Google LLC. 2016-2021</Copyright>
     <AssemblyVersion>1.1.34</AssemblyVersion>
     <RepositoryUrl>https://github.com/darkstar-gmbh/nt-objects-manager</RepositoryUrl>
-    <Platforms>x64</Platforms>
-    <TargetFrameworks>net481</TargetFrameworks>
+    <Platforms>MSIL</Platforms>
+    <TargetFrameworks>netcoreapp7</TargetFrameworks>
     <RootNamespace>NtObjectManager</RootNamespace>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <DocumentationFile>C:\Users\rmuel\git\nt-objects-manager\NtObjectManager\bin\Debug\NtObjectManager.xml</DocumentationFile>
+    <DocumentationFile>C:\Users\rmuel\git\nt-objects-manager\NtObjectManager\bin\Debug\NtObjectManager.Core.xml</DocumentationFile>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>C:\Users\rmuel\OneDrive\Admin\certs\vs-code-key.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Title>NT Objects Powershell Manager</Title>
+    <Title>Powershell Core NT Objects Manager</Title>
     <Version>1.1.34</Version>
     <RepositoryType>git</RepositoryType>
     <PackageTags>v1.1.34</PackageTags>
@@ -28,24 +28,21 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <IncludeSymbols>True</IncludeSymbols>
-    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <EnableNETAnalyzers>False</EnableNETAnalyzers>
+    <AnalysisLevel>none</AnalysisLevel>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|4.8.1|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp7|MSIL'">
     <Optimize>True</Optimize>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|4.8.1|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp7|MSIL'">
     <Optimize>False</Optimize>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net481|x64'">
-    <Optimize>True</Optimize>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net481|x64'">
-    <Optimize>False</Optimize>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
@@ -59,48 +56,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="AppModelFunctions.ps1" />
-    <None Remove="DsFunctions.ps1" />
-    <None Remove="FirewallFunctions.ps1" />
-    <None Remove="Formatters.ps1xml" />
-    <None Remove="KerberosFunctions.ps1" />
-    <None Remove="LsaFunctions.ps1" />
-    <None Remove="MiscFunctions.ps1" />
-    <None Remove="NtDeviceFunctions.ps1" />
-    <None Remove="NtFileFunctions.ps1" />
-    <None Remove="NtKeyFunctions.ps1" />
-    <None Remove="NtObjectFunctions.ps1" />
-    <None Remove="NtObjectManager.psd1" />
-    <None Remove="NtObjectManager.psm1" />
-    <None Remove="NtProcessFunctions.ps1" />
-    <None Remove="NtSectionFunctions.ps1" />
-    <None Remove="NtSecurityFunctions.ps1" />
-    <None Remove="NtSystemInfoFunctions.ps1" />
-    <None Remove="NtThreadFunctions.ps1" />
-    <None Remove="NtTokenFunctions.ps1" />
-    <None Remove="NtVirtualMemoryFunctions.ps1" />
-    <None Remove="NtWindowFunctions.ps1" />
-    <None Remove="packages.config" />
-    <None Remove="RpcFunctions.ps1" />
-    <None Remove="SamFunctions.ps1" />
-    <None Remove="SocketFunctions.ps1" />
-    <None Remove="TypeExtensions.ps1xml" />
-    <None Remove="UtilityFunctions.ps1" />
-    <None Remove="Win32DebugFunctions.ps1" />
-    <None Remove="Win32ModuleFunctions.ps1" />
-    <None Remove="Win32ProcessFunctions.ps1" />
-    <None Remove="Win32SecurityFunctions.ps1" />
-    <None Remove="Win32ServiceFunctions.ps1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="NtObjectManager.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\NtApiDotNet\NtApiDotNet.Build.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -197,5 +155,9 @@
     <Content Include="Win32ServiceFunctions.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NtApiDotNet\NtApiDotNet.Core.csproj" />
   </ItemGroup>
 </Project>

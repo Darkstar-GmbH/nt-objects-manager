@@ -1,9 +1,8 @@
-﻿using System.ComponentModel;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("NtApiDotNet")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("NtObjectManager.Core")]
+[assembly: AssemblyDescription("Powershell Core Nt Object Manager")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Google Inc.")]
 [assembly: AssemblyProduct("NtApiDotNet")]
@@ -14,5 +13,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.1.34")]
 [assembly: AssemblyInformationalVersion("1.1.34")]
 [assembly: ComVisible(false)]
-
 

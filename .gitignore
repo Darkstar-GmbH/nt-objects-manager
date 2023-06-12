@@ -41,4 +41,6 @@ tools/
 
 .vs/
 .config/
-
+
+# github token
+token.cake

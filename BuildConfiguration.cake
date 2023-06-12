@@ -3,7 +3,7 @@ public class BuildConfiguration
 	public string Target { get; private set; }
 	public string Architecture { get; private set; }
     public string Configuration { get; private set; }
-    public List<string> Frameworks {get; set;}
+    public string Framework {get; set;}
 
     public static BuildConfiguration New()
     {
@@ -28,9 +28,9 @@ public class BuildConfiguration
         return this;
     }
 
-    public BuildConfiguration SetFrameworks(string[] frameworks) 
+    public BuildConfiguration SetFramework(string framework) 
     {
-        this.Frameworks = new List<string>(frameworks);
+        this.Framework = framework;
         return this;
     }
 }

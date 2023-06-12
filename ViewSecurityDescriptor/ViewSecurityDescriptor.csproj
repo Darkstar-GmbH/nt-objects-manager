@@ -95,12 +95,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NtApiDotNet.Forms\NtApiDotNet.Forms.csproj">
-      <Project>{fd4cb5f2-24ed-4561-b0e1-bb397ae5c636}</Project>
-      <Name>NtApiDotNet.Forms</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

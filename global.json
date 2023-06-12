@@ -1,0 +1,14 @@
+{
+    "projects": [
+        "NtApiDotNet",
+        "NtObjectManager"
+    ],
+    "sdk": {
+        "version": "7.0.302",
+        "rollForward": "latestFeature",
+        "runAnalyzers": "false"
+    },
+    "tools": {
+        "dotnet": "8.0.100-preview.4.23260.5"
+    }
+}

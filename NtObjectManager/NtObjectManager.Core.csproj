@@ -30,7 +30,7 @@
     <IncludeSymbols>True</IncludeSymbols>
     <RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <EnableNETAnalyzers>False</EnableNETAnalyzers>
     <AnalysisLevel>none</AnalysisLevel>
   </PropertyGroup>
@@ -38,21 +38,31 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp7|MSIL'">
     <Optimize>True</Optimize>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <CopyyLocalLockFileAssemblies>true</CopyyLocalLockFileAssemblies>
+	<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp7|MSIL'">
     <Optimize>False</Optimize>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <CopyyLocalLockFileAssemblies>true</CopyyLocalLockFileAssemblies>
+	<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-	<PackageReference Include="System.Management.Automation" Version="6.0.4" /> 
-    <PackageReference Include="System.Security.AccessControl" Version="6.0.0" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="7.0.0" />
+	<PackageReference Include="System.Management.Automation" Version="6.0.4" />
     <PackageReference Include="System.Threading.AccessControl" Version="7.0.1" />
-    <PackageReference Include="TaskScheduler" Version="2.10.1" />
+	<PackageReference Include="TaskScheduler" Version="2.10.1">
+      <PrivateAssets>contentfiles;analyzers</PrivateAssets>
+	</PackageReference>
+  </ItemGroup>
+	
+  <ItemGroup>
+	<ProjectReference Include="..\NtApiDotNet\NtApiDotNet.Core.csproj">
+	<Private>True</Private>
+	<CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
+	<PrivateAssets>analyzers</PrivateAssets>
+	</ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -156,8 +166,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\NtApiDotNet\NtApiDotNet.Core.csproj" />
-  </ItemGroup>
+	
 </Project>

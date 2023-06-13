@@ -43,4 +43,4 @@ tools/
 .config/
 
 # github token
-token.cake
+token.key

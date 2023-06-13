@@ -4,6 +4,7 @@ public class BuildConfiguration
 	public string Architecture { get; private set; }
     public string Configuration { get; private set; }
     public string Framework {get; set;}
+    public string Token { get; set; }
 
     public static BuildConfiguration New()
     {
@@ -31,6 +32,12 @@ public class BuildConfiguration
     public BuildConfiguration SetFramework(string framework) 
     {
         this.Framework = framework;
+        return this;
+    }
+
+    public BuildConfiguration SetToken(string token) 
+    {
+        this.Token = token;
         return this;
     }
 }

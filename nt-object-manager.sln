@@ -10,10 +10,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Projektmappenelemente", "{8186F75D-E020-40DF-AAD3-4CADEE355B53}"
 	ProjectSection(SolutionItems) = preProject
 		build.cake = build.cake
-		cake.config = cake.config
 		BuildConfiguration.cake = BuildConfiguration.cake
+		cake.config = cake.config
 		global.json = global.json
+		releasenotes.txt = releasenotes.txt
 		tools.json = tools.json
+		token.key = token.key
 	EndProjectSection
 EndProject
 Global
